@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tezos Form Visualizer</title>
+    <title>Tezos Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
@@ -84,6 +84,7 @@
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
 </head>
 
 <body class="bg-black flex items-center justify-center h-screen overflow-hidden">
@@ -144,7 +145,8 @@
 
         <div id="address-display" class="mt-6 w-[min(90vw,70vh)] bg-black border-2 border-green-500/40 rounded-sm p-4 font-mono text-left shadow-[0_0_15px_rgba(34,197,94,0.15)] relative overflow-hidden terminal-container opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px]"></div>
-            <pre id="address-text" class="text-[7px] leading-tight text-green-400 whitespace-pre-wrap m-0 font-mono drop-shadow-[0_0_5px_rgba(74,222,128,0.6)] relative z-10">> Fetching transactions...</pre>
+            <pre id="address-text" class="text-[9.5px] leading-tight text-green-400 whitespace-pre-wrap m-0 font-mono drop-shadow-[0_0_5px_rgba(74,222,128,0.6)] relative z-10">> Fetching transactions...</pre>
+            <pre id="download-gif-btn" class="text-[9.5px] leading-tight text-green-400 whitespace-pre-wrap m-0 font-mono drop-shadow-[0_0_5px_rgba(74,222,128,0.6)] relative z-10 cursor-pointer hover:text-white transition-colors mt-2">> Download GIF</pre>
         </div>
     </div>
 
@@ -285,7 +287,7 @@
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, w, h);
             
-            const glitchColors = customPalette;
+            const glitchColors = getSeededColors(currentAddress, 5);
             for (let i = 0; i < 40; i++) {
                 ctx.fillStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                 const y = Math.random() * h;
@@ -317,7 +319,7 @@
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, w, h);
             
-            const glitchColors = customPalette;
+            const glitchColors = getSeededColors(currentAddress, 5);
             for (let i = 0; i < 60; i++) {
                 ctx.fillStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                 const y = Math.random() * h;
@@ -356,12 +358,13 @@
             
             ctx.fillStyle = 'white';
             const numBands = Math.floor(Math.random() * 20) + 30;
+            const glitchColors = getSeededColors(currentAddress, 5);
             for (let i = 0; i < numBands; i++) {
                 const y = Math.random() * h;
                 const height = Math.random() * 4 + 1;
                 const x = Math.random() * w * 0.8 - w * 0.2;
                 const width = Math.random() * w * 1.5;
-                ctx.fillStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
+                ctx.fillStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                 ctx.fillRect(x, y, width, height);
             }
             
@@ -385,6 +388,7 @@
             ctx.fillStyle = '#222';
             ctx.fillRect(0, 0, w, h);
             
+            const glitchColors = getSeededColors(currentAddress, 5);
             const numBlocks = Math.floor(Math.random() * 40) + 20;
             for (let i = 0; i < numBlocks; i++) {
                 const bw = Math.random() * (w / 2) + 10;
@@ -393,11 +397,11 @@
                 const by = Math.random() * h;
                 
                 const shade = Math.floor(Math.random() * 256);
-                ctx.fillStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
+                ctx.fillStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                 ctx.fillRect(bx, by, bw, bh);
 
                 if (Math.random() > 0.5) {
-                    ctx.fillStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
+                    ctx.fillStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                     const numLines = Math.floor(Math.random() * 10) + 5;
                     for (let j = 0; j < numLines; j++) {
                         const ly = by + Math.random() * bh;
@@ -421,6 +425,7 @@
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 1;
 
+            const glitchColors = getSeededColors(currentAddress, 5);
             // Draw dot grid
             if (Math.random() > 0.3) {
                 const spacing = 10 + Math.floor(Math.random() * 20);
@@ -429,7 +434,7 @@
                 for (let x = offsetX; x < w; x += spacing) {
                     for (let y = offsetY; y < h; y += spacing) {
                         if (Math.random() > 0.2) {
-                            ctx.fillStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
+                            ctx.fillStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                             ctx.fillRect(x, y, 1, 1);
                         }
                     }
@@ -442,7 +447,7 @@
                 const cx = Math.random() * w;
                 const cy = Math.random() * h;
                 const cs = 4 + Math.random() * 6;
-                ctx.strokeStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
+                ctx.strokeStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                 ctx.beginPath();
                 ctx.moveTo(cx - cs, cy); ctx.lineTo(cx + cs, cy);
                 ctx.moveTo(cx, cy - cs); ctx.lineTo(cx, cy + cs);
@@ -455,7 +460,7 @@
                 const lx = Math.random() * w;
                 const ly = Math.random() * h;
                 const len = 20 + Math.random() * 100;
-                ctx.strokeStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
+                ctx.strokeStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                 ctx.beginPath();
                 ctx.moveTo(lx, ly);
                 if (Math.random() > 0.5) {
@@ -478,8 +483,8 @@
                 const bx = Math.random() * w;
                 const by = Math.random() * h;
                 const bs = 2 + Math.random() * 10;
-                ctx.fillStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
-                ctx.strokeStyle = customPalette[Math.floor(Math.random() * customPalette.length)];
+                ctx.fillStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
+                ctx.strokeStyle = glitchColors[Math.floor(Math.random() * glitchColors.length)];
                 if (Math.random() > 0.5) {
                     ctx.fillRect(bx, by, bs, bs);
                 } else {
@@ -505,7 +510,8 @@
             }
             
             // Phosphorous green text with glow
-            const terminalColor = customPalette[Math.floor(Math.random() * customPalette.length)];
+            const glitchColors = getSeededColors(currentAddress, 5);
+            const terminalColor = glitchColors[Math.floor(Math.random() * glitchColors.length)];
             ctx.fillStyle = terminalColor;
             ctx.shadowColor = terminalColor;
             ctx.shadowBlur = 4;
@@ -562,6 +568,99 @@
         let currentRotation = 0;
         let isProcessing = false;
         let layersCommitted = 0;
+        let currentAddress = "tz1default";
+        let gifRequested = false;
+        let isCapturingGif = false;
+
+        function startGifCapture() {
+            isCapturingGif = true;
+            gifRequested = false;
+            const downloadBtn = document.getElementById('download-gif-btn');
+            downloadBtn.textContent = "> Capturing (0/60)...";
+            
+            const frames = [];
+            const totalFrames = 60;
+            let frameCount = 0;
+            const gifWidth = paintCanvas.width;
+            const gifHeight = paintCanvas.height;
+            
+            const isGrayscale = document.querySelector('.canvas-container').classList.contains('grayscale-mode');
+            
+            const captureInterval = setInterval(() => {
+                const compCanvas = document.createElement('canvas');
+                compCanvas.width = gifWidth;
+                compCanvas.height = gifHeight;
+                const compCtx = compCanvas.getContext('2d');
+                
+                compCtx.fillStyle = 'black';
+                compCtx.fillRect(0, 0, gifWidth, gifHeight);
+                
+                if (isGrayscale) {
+                    compCtx.filter = 'grayscale(100%)';
+                }
+                
+                compCtx.save();
+                compCtx.translate(gifWidth/2, gifHeight/2);
+                compCtx.rotate(currentRotation * Math.PI / 180);
+                compCtx.translate(-gifWidth/2, -gifHeight/2);
+                
+                compCtx.drawImage(paintCanvas, 0, 0);
+                compCtx.drawImage(animationCanvas, 0, 0);
+                compCtx.drawImage(noiseDisplayCanvas, 0, 0);
+                compCtx.drawImage(glitchDisplayCanvas, 0, 0);
+                compCtx.drawImage(glitch2DisplayCanvas, 0, 0);
+                compCtx.drawImage(glitch3DisplayCanvas, 0, 0);
+                compCtx.drawImage(glitch4DisplayCanvas, 0, 0);
+                compCtx.drawImage(glitch5DisplayCanvas, 0, 0);
+                compCtx.drawImage(terminalDisplayCanvas, 0, 0);
+                
+                compCtx.restore();
+                
+                frames.push(compCanvas.toDataURL('image/png'));
+                frameCount++;
+                downloadBtn.textContent = `> Capturing (${frameCount}/${totalFrames})...`;
+                
+                if (frameCount >= totalFrames) {
+                    clearInterval(captureInterval);
+                    downloadBtn.textContent = "> Encoding GIF...";
+                    
+                    gifshot.createGIF({
+                        images: frames,
+                        interval: 1 / 30,
+                        gifWidth: gifWidth,
+                        gifHeight: gifHeight,
+                        numWorkers: 2
+                    }, function(obj) {
+                        if (!obj.error) {
+                            const link = document.createElement('a');
+                            link.download = `tezture-cascade-${Date.now()}.gif`;
+                            link.href = obj.image;
+                            link.click();
+                            downloadBtn.textContent = "> Download GIF";
+                        } else {
+                            console.error("GIF encoding error:", obj.error);
+                            downloadBtn.textContent = "> Error Encoding";
+                            setTimeout(() => { downloadBtn.textContent = "> Download GIF"; }, 3000);
+                        }
+                        isCapturingGif = false;
+                        setTimeout(processNextAddress, 1000); // Resume animation
+                    });
+                }
+            }, 1000 / 30);
+        }
+
+        function getSeededColors(address, count) {
+            let hash = 0;
+            for (let i = 0; i < address.length; i++) {
+                hash = address.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                const index = Math.abs(hash + i * 31) % customPalette.length;
+                colors.push(customPalette[index]);
+            }
+            return colors;
+        }
 
             const customPalette = [
             '#2a9f55', '#2a9faa', '#2a9fff', '#2abf00', '#2abf55', '#2abfaa', '#2abfff',
@@ -605,7 +704,10 @@
                 this.x = x;
                 this.y = y;
                 this.color = color;
-                const speed = Math.random() * 2.5 + 2.0;
+                let speed = Math.random() * 2.5 + 2.0;
+                if (color !== 'noise' && color !== 'terminal text') {
+                    speed *= 0.6; // Slow down by 40%
+                }
                 this.vx = 0;
                 this.vy = 0;
                 this.speed = speed;
@@ -1223,7 +1325,8 @@
             glitch5DisplayCanvas.style.transform = transformValue;
             terminalDisplayCanvas.style.transform = transformValue;
 
-            const address = currentTx.target.address;
+            const address = currentTx.target && currentTx.target.address ? currentTx.target.address : (currentTx.id || "UNKNOWN");
+            currentAddress = address;
             const amount = currentTx.amount || 0;
             const isSignificant = amount > 1000000;
             addressText.textContent = `> TX: ${currentTx.id}\n> Address: ${address}${isSignificant ? ' (Major)' : ''}\n> Buffer: ${transactionBuffer.length}`;
@@ -1232,7 +1335,17 @@
             const dripInterval = setInterval(() => {
                 if (charIndex >= address.length) {
                     clearInterval(dripInterval);
-                    setTimeout(processNextAddress, 5000);
+                    
+                    const checkFinished = setInterval(() => {
+                        if (formBrushes.length === 0) {
+                            clearInterval(checkFinished);
+                            if (gifRequested) {
+                                startGifCapture();
+                            } else {
+                                setTimeout(processNextAddress, 2000);
+                            }
+                        }
+                    }, 100);
                     return;
                 }
                 const char = address[charIndex];
@@ -1312,6 +1425,15 @@
 
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('DOMContentLoaded', () => {
+            const downloadBtn = document.getElementById('download-gif-btn');
+            downloadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!gifRequested && !isCapturingGif) {
+                    gifRequested = true;
+                    downloadBtn.textContent = "> Waiting for cascade...";
+                }
+            });
+
             resizeCanvas();
             animate();
             fetchMoreTransactions();
